@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Ravi Sir! | R&D Core Portal</title>
+  <style>
+    :root {
+      --primary: #8b5cf6; /* VIBRANT PURPLE */
+      --secondary: #ec4899; /* PINK */
+      --accent: #22d3ee; /* CYAN */
+      --gold: #f59e0b; /* GOLD ACCENT */
+      --bg: #030712; /* DEEP SPACE BLACK */
+      --card-bg: rgba(17, 24, 39, 0.85);
+      --card-border: rgba(255, 255, 255, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Mono', 'Courier New', monospace; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: #f9fafb;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    /* --- ANIMATED BACKGROUND & CONFETTI CANVASES --- */
+    canvas#backgroundCanvas, canvas#confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    canvas#backgroundCanvas { z-index: 1; }
+    canvas#confettiCanvas { z-index: 99; }
+
+    /* --- NAVIGATION BAR --- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      background: rgba(3, 7, 18, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--gold);
+      cursor: pointer;
+    }
+
+    .nav-badge {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: rgba(139, 92, 246, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      list-style: none;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #9ca3af;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--accent);
+      border-color: rgba(34, 211, 238, 0.3);
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(139, 92, 246, 0.25);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* --- LAYOUT WRAPPER --- */
+    .website-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 20px 40px 20px;
+    }
+
+    /* --- PAGE SECTIONS CONTROL --- */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- PAGE 1: HERO GREETING CARD & STATS --- */
+    .birthday-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 50px 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(139, 92, 246, 0.15);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .rrk-monogram {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 70px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.3), transparent);
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+      margin-bottom: 20px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent);
+      border-radius: 50px;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    h1.main-title {
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(139, 92, 246, 0.5);
+      letter-spacing: 1px;
+    }
+
+    h2.sir-name {
+      font-size: 1.6rem;
+      color: #9ca3af;
+      font-weight: 400;
+      margin-bottom: 30px;
+    }
+
+    .special-label {
+      color: var(--gold);
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .typed-greeting {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #d1d5db;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      border-radius: 14px;
+      border-left: 4px solid var(--primary);
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.1rem;
+      background-color: var(--accent);
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+
+    .action-button {
+      background: transparent;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      padding: 16px 36px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .action-button:hover {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 35px rgba(34, 211, 238, 0.7);
+    }
+
+    /* SECTION HEADINGS */
+    .section-title-block {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title-block h3 {
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .section-title-block p {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    /* STATS & MILESTONES */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      backdrop-filter: blur(16px);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 5px;
+    }
+
+    .stat-desc {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      letter-spacing: 1px;
+    }
+
+    /* --- PAGE 2: FULL TEAM WISHES PAGE --- */
+    .wishes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .wish-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .wish-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+    }
+
+    .wish-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 35px rgba(34, 211, 238, 0.25);
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1.5px solid var(--primary);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .member-name {
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.05rem;
+    }
+
+    .member-role {
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+
+    .wish-text {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 0.85rem;
+      color: #6b7280;
+      letter-spacing: 1px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+      h1.main-title { font-size: 2.1rem; }
+      .birthday-card { padding: 30px 20px; }
+      .nav-links { gap: 5px; }
+      .nav-btn { padding: 6px 10px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Animated & Particle Canvas Elements -->
+  <canvas id="backgroundCanvas"></canvas>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="nav-brand" onclick="switchTab('home')">
+      <div class="nav-badge">RRK</div>
+      <span>R&D PORTAL</span>
+    </div>
+    <ul class="nav-links">
+      <li><button class="nav-btn active" id="btn-home" onclick="switchTab('home')">Greeting</button></li>
+      <li><button class="nav-btn" id="btn-wishes" onclick="switchTab('wishes')">Team Wishes</button></li>
+    </ul>
+  </nav>
+
+  <!-- Website Body Wrapper -->
+  <div class="website-container">
+
+    <!-- PAGE 1: HOME / GREETING SECTION -->
+    <div id="page-home" class="page-section active">
+      
+      <section class="birthday-card">
+        <div class="rrk-monogram">RRK</div>
+        <div><span class="tag">R&D LEADERSHIP HUB</span></div>
+        
+        <h1 class="main-title">ARCHITECT OF INNOVATION</h1>
+        <h2 class="sir-name">HAPPY BIRTHDAY, <span class="special-label">RAVI SIR!</span></h2>
+        
+        <div class="typed-greeting">
+          <span id="typedGreeting"></span><span class="cursor" id="typingCursor"></span>
+        </div>
+
+        <button class="action-button" onclick="triggerCelebration(event)">
+          ⚡ TRIGGER INNOVATION PULSE
+        </button>
+      </section>
+
+      <section>
+        <div class="section-title-block">
+          <h3>LEADERSHIP MILESTONES</h3>
+          <p>// System logs & performance output</p>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-number">100%</div>
+            <div class="stat-desc">INNOVATION ACCURACY</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">&#8734;</div>
+            <div class="stat-desc">BREAKTHROUGH IDEAS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">#1</div>
+            <div class="stat-desc">R&D TEAM MENTOR</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- PAGE 2: FULL TEAM WISHES PAGE -->
+    <div id="page-wishes" class="page-section">
+      
+      <div class="section-title-block">
+        <h3>TEAM BIRTHDAY WISHES</h3>
+        <p>// Personal messages from your R&D Engineering Team to Ravi Sir</p>
+      </div>
+
+      <div class="wishes-grid">
+        <div class="wish-card">
+          <div class="member-info">
+            <div class="avatar">HW</div>
+            <div>
+              <div class="member-name">Hardware & PCB Team</div>
+              <div class="member-role">Circuit Engineering Unit</div>
+            </div>
+          </div>
+          <div class="wish-text">
+            "Happy Birthday Ravi Sir! Thank you for always showing us how to debug complex problems with ease and guiding every circuit design to perfection."
+          </div>
+        </div>
+
+        <div class="wish-card">
+          <div class="member-info">
+            <div class="avatar">FW</div>
+            <div>
+              <div class="member-name">Embedded Software Team</div>
+              <div class="member-role">Firmware & Code Lab</div>
+            </div>
+          </div>
+          <div class="wish-text">
+            "Wishing you a fantastic year ahead, Ravi Sir! Your vision drives our code at max clock speed without any bugs or delays!"
+          </div>
+        </div>
+
+        <div class="wish-card">
+          <div class="member-info">
+            <div class="avatar">QA</div>
+            <div>
+              <div class="member-name">Testing & Validation</div>
+              <div class="member-role">Quality Assurance</div>
+            </div>
+          </div>
+          <div class="wish-text">
+            "Happy Birthday Sir! Working under your leadership is always a 100% pass result for our team. Have an extraordinary day!"
+          </div>
+        </div>
+
+        <div class="wish-card">
+          <div class="member-info">
+            <div class="avatar">RD</div>
+            <div>
+              <div class="member-name">R&D Design Engineers</div>
+              <div class="member-role">Product Innovation Lab</div>
+            </div>
+          </div>
+          <div class="wish-text">
+            "May your birthday bring you endless happiness, health, and breakthroughs in every new technology project you spearhead, Ravi Sir!"
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      SPECIALLY DESIGNED & FABRICATED BY YOUR R&D TEAM ❤️
+    </footer>
+  </div>
+
+  <script>
+    // --- PAGE SWITCHING NAVIGATION ---
+    function switchTab(tabName) {
+      document.querySelectorAll('.page-section').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById('page-' + tabName).classList.add('active');
+      document.getElementById('btn-' + tabName).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- 1. DYNAMIC CONSTELLATION BACKGROUND ---
+    const bgCanvas = document.getElementById('backgroundCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const confettiCtx = confettiCanvas.getContext('2d');
+    let width, height;
+    let bgParticles = [];
+
+    function resize() {
+      width = bgCanvas.width = confettiCanvas.width = window.innerWidth;
+      height = bgCanvas.height = confettiCanvas.height = window.innerHeight;
+    }
+
+    class BgParticle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.size = Math.random() * 2 + 1;
+        this.alpha = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+      draw() {
+        bgCtx.fillStyle = `rgba(139, 92, 246, ${this.alpha})`;
+        bgCtx.beginPath();
+        bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+    }
+
+    function initBackground() {
+      for (let i = 0; i < 120; i++) bgParticles.push(new BgParticle());
+    }
+
+    function animateBackground() {
+      bgCtx.clearRect(0, 0, width, height);
+      bgParticles.forEach(p => { p.update(); p.draw(); });
+
+      for (let i = 0; i < bgParticles.length; i++) {
+        for (let j = i + 1; j < bgParticles.length; j++) {
+          const dx = bgParticles[i].x - bgParticles[j].x;
+          const dy = bgParticles[i].y - bgParticles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 120) {
+            bgCtx.strokeStyle = `rgba(34, 211, 238, ${(1 - dist / 120) * 0.25})`;
+            bgCtx.lineWidth = 0.6;
+            bgCtx.beginPath();
+            bgCtx.moveTo(bgParticles[i].x, bgParticles[i].y);
+            bgCtx.lineTo(bgParticles[j].x, bgParticles[j].y);
+            bgCtx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateBackground);
+    }
+
+    // --- 2. PARTY PAPER / CONFETTI SHOWER ENGINE ---
+    let confettiList = [];
+    const confettiColors = ['#22d3ee', '#ec4899', '#8b5cf6', '#f59e0b', '#10b981', '#ffffff', '#38bdf8'];
+
+    class ConfettiPaper {
+      constructor(x, y, isSideCannon = false, side = 'left') {
+        this.x = x;
+        this.y = y;
+        this.width = Math.random() * 12 + 6;
+        this.height = Math.random() * 16 + 8;
+        this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        
+        if (isSideCannon) {
+          const angle = side === 'left' ? (Math.random() * -0.6 - 0.2) : (Math.PI + Math.random() * 0.6 + 0.2);
+          const speed = Math.random() * 22 + 12;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed;
+        } else {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 16 + 8;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed - 4;
+        }
+        
+        this.gravity = 0.22;
+        this.drag = 0.96;
+        this.rotationX = Math.random() * 360;
+        this.rotationY = Math.random() * 360;
+        this.rotationZ = Math.random() * 360;
+        this.rotSpeedX = (Math.random() - 0.5) * 14;
+        this.rotSpeedY = (Math.random() - 0.5) * 14;
+        this.opacity = 1;
+      }
+
+      update() {
+        this.vx *= this.drag;
+        this.vy *= this.drag;
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotationX += this.rotSpeedX;
+        this.rotationY += this.rotSpeedY;
+
+        if (this.y > height - 30) {
+          this.opacity -= 0.015;
+        }
+      }
+
+      draw() {
+        confettiCtx.save();
+        confettiCtx.translate(this.x, this.y);
+        confettiCtx.rotate((this.rotationZ * Math.PI) / 180);
+        confettiCtx.scale(Math.cos(this.rotationX * Math.PI / 180), Math.sin(this.rotationY * Math.PI / 180));
+        confettiCtx.fillStyle = this.color;
+        confettiCtx.globalAlpha = Math.max(0, this.opacity);
+        confettiCtx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        confettiCtx.restore();
+      }
+    }
+
+    function triggerPartyPaperExplosion(originX, originY) {
+      for (let i = 0; i < 120; i++) {
+        confettiList.push(new ConfettiPaper(originX, originY));
+      }
+      for (let i = 0; i < 90; i++) {
+        confettiList.push(new ConfettiPaper(0, height * 0.7, true, 'left'));
+      }
+      for (let i = 0; i < 90; i++) {
+        confettiList.push(new ConfettiPaper(width, height * 0.7, true, 'right'));
+      }
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, width, height);
+      confettiList.forEach((paper, index) => {
+        paper.update();
+        paper.draw();
+        if (paper.opacity <= 0 || paper.y > height + 60) {
+          confettiList.splice(index, 1);
+        }
+      });
+      requestAnimationFrame(animateConfetti);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    initBackground();
+    animateBackground();
+    animateConfetti();
+
+    // --- 3. TYPING MESSAGE ANIMATION ---
+    const greetingText = "To our Senior Leader, Ravi Sir:\n\nThank you for guiding our R&D team through complex challenges, inspiring new ideas, and constantly pushing us toward excellence.\n\nMay this year bring you great success, new technological breakthroughs, and happiness in every project you undertake!";
+    let currentByte = 0;
+    const typedGreetingElement = document.getElementById('typedGreeting');
+    const cursor = document.getElementById('typingCursor');
+
+    function startTypingGreeting() {
+      if (currentByte < greetingText.length) {
+        typedGreetingElement.textContent += greetingText.charAt(currentByte);
+        currentByte++;
+        setTimeout(startTypingGreeting, 30 + Math.random() * 25);
+      } else {
+        cursor.style.animation = 'none';
+        cursor.style.opacity = '0';
+      }
+    }
+    setTimeout(startTypingGreeting, 500);
+
+    // --- 4. VOICE SPEECH ENGINE FOR SINGING ---
+    function singHappyBirthday() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Reset any active speech
+        
+        const songText = "Happy Birthday to you. Happy Birthday to you. Happy Birthday dear Ravi Sir. Happy Birthday to you!";
+        const utterance = new SpeechSynthesisUtterance(songText);
+        
+        utterance.rate = 0.85; // Rhythm tempo
+        utterance.pitch = 1.25; // Energetic pitch
+        utterance.volume = 1.0;  // Full volume
+
+        // Try to pick a natural English voice if available
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha')));
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // --- 5. AUDIO SYNTHESIZER MELODY ---
+    let audioCtx;
+    const NOTES = {
+      'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+      'G4': 392.00, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
+      'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99
+    };
+
+    const birthdayMelody = [
+      ['G4', 0.75], ['G4', 0.25], ['A4', 1], ['G4', 1], ['C5', 1], ['B4', 2],
+      ['G4', 0.75], ['G4', 0.25], ['A4', 1], ['G4', 1], ['D5', 1], ['C5', 2],
+      ['G4', 0.75], ['G4', 0.25], ['G5', 1], ['E5', 1], ['C5', 1], ['B4', 1], ['A4', 1],
+      ['F5', 0.75], ['F5', 0.25], ['E5', 1], ['C5', 1], ['D5', 1], ['C5', 2]
+    ];
+
+    function playMelodyBackground() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      let time = audioCtx.currentTime + 0.1;
+      const tempo = 0.35;
+
+      birthdayMelody.forEach(([note, beats]) => {
+        const freq = NOTES[note];
+        if (freq) {
+          const osc = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, time);
+
+          const duration = beats * tempo;
+          gainNode.gain.setValueAtTime(0.18, time);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration - 0.05);
+
+          osc.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+
+          osc.start(time);
+          osc.stop(time + duration);
+        }
+        time += beats * tempo;
+      });
+    }
+
+    // --- 6. COMBINED CELEBRATION TRIGGER ---
+    function triggerCelebration(event) {
+      // 1. Fire Party Paper Cannons
+      const rect = event.target.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+      triggerPartyPaperExplosion(originX, originY);
+
+      // 2. Play Melodic Background Music
+      playMelodyBackground();
+
+      // 3. Voice Sings Happy Birthday Out Loud
+      singHappyBirthday();
+    }
+  </script>
+</body>
+</html>
